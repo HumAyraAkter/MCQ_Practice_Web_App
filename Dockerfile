@@ -25,6 +25,13 @@ RUN composer install --no-dev --optimize-autoloader
 # Configure Nginx
 RUN cp deployment/nginx.conf /etc/nginx/sites-available/default
 
+# Fix storage & cache permissions
+RUN mkdir -p storage/framework/{sessions,views,cache} \
+    storage/logs \
+    bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache \
+    && chown -R www-data:www-data storage bootstrap/cache
+
 # Expose port and start server
 EXPOSE 80
 CMD service nginx start && php-fpm
